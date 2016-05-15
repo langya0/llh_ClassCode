@@ -3,9 +3,11 @@ using namespace std;
 
 #include"Graph.h"
 #include"GraphDir.h"
+#include"UnionFindset.h"
 int main()
 {
-    testD();
+    //testD();
+    testU();
     //test();
     return 0;
 }

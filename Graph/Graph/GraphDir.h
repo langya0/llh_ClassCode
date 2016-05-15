@@ -1,18 +1,18 @@
 #pragma once
-//临接表实现
-#include<vector>
-
+//邻接表实现图
 
 template<class V, class E>
 struct Edge
 {
-	Edge(const V&v, const E&e)
+	Edge(size_t dst,size_t src, const E&e)
 		:_wight(e)
-		, _v(v)
+        ,_dst(dst)
+        ,_src(src)
 		, _next(NULL)
 	{}
-	E _wight;
-	V _v;
+	E _wight;       //权值，边比重
+    size_t _dst;    //目的顶点下标
+    size_t _src;    //源顶点下标
 	struct Edge<V, E>* _next;
 };
 
@@ -20,10 +20,10 @@ template<class V,class E>
 class GraphList
 {
 protected:
-	V* _vArr;
+	V* _vArr;               //顶点存储数组 
 	size_t _size;
-
-	Edge<V, E>** _eList;
+     
+	Edge<V, E>** _eList;    //边存储指针数组
 
 public:
 	GraphList(const V* vArray, const size_t size)
@@ -39,6 +39,7 @@ public:
 		_eList = new Edge<V,E>*[size];
 		memset(_eList, 0, sizeof(Edge<V, E>)*size);
 	}
+
 	int FindIndexV(const V& v) const
 	{
 		for (size_t i = 0; i < _size; ++i)
@@ -49,15 +50,15 @@ public:
 		return -1;
 	}
 
-	bool AddEdge2(const V& v1, const V&v2, const E& e)
+    //添加v1->v2的边
+	void AddEdge2(const V& v1, const V&v2, const E& e)
 	{
 		int ind1 = FindIndexV(v1);
 
-		Edge<V, E>* cur = new Edge<V, E>(v2, e);
+		Edge<V, E>* cur = new Edge<V, E>(v2,v1,e);
 		cur->_next = _eList[ind1];
 		_eList[ind1] = cur;
-		return false;
-	}
+  	}
 
 	void Display()const
 	{
@@ -74,13 +75,15 @@ public:
 			Edge<V, E>* cur = _eList[i];
 			while (cur)
 			{
-				cout << "[" << cur->_v << "]" << cur->_wight << " ";
+				cout << "[" << cur->_dst << "]" << cur->_wight << " ";
 				cur = cur->_next;
 			}
 			cout <<"NULL"<< endl;
 		}
 		cout << endl;
 	}
+
+
 
 	~GraphList()
 	{
@@ -107,17 +110,16 @@ public:
 
 void testD()
 {
-//	int vArr1[] = { 1,2,3,4,5,6 };
-////	char vArr1[] = { 'A','B','C','D','E','F' };
-//	GraphList<int, int> gh1(vArr1, sizeof(vArr1) / sizeof(vArr1[0]));
-//
-//	gh1.AddEdge2(1, 2, 11);
-//	gh1.AddEdge2(3, 2, 33);
-//	gh1.AddEdge2(5, 2, 44);
-//	gh1.AddEdge2(1, 6, 55);
-//	gh1.AddEdge2(4, 6, 66);
-//	gh1.Display();
-//
+	int vArr1[] = { 1,2,3,4,5,6 };
+	GraphList<int, int> gh1(vArr1, sizeof(vArr1) / sizeof(vArr1[0]));
+
+	gh1.AddEdge2(1, 2, 11);
+	gh1.AddEdge2(3, 2, 33);
+	gh1.AddEdge2(5, 2, 44);
+	gh1.AddEdge2(1, 6, 55);
+	gh1.AddEdge2(4, 6, 66);
+	gh1.Display();
+
 	char vArr2[] = { 'A','B','C','D','E','F' };
 	GraphList<char, int> gh(vArr2, sizeof(vArr2) / sizeof(vArr2[0]));
 	gh.AddEdge2('E', 'D', 11);
