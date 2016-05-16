@@ -1,5 +1,6 @@
 #pragma once
 
+//图的矩阵表示方法
 template<class V,class E>
 class Graph
 {
@@ -99,7 +100,7 @@ public:
 	}
 };
 
-void test()
+void testG()
 {
 	int vArr[] = { 1,2,3,4,5,6 };
 	Graph<int, int> gh(vArr, sizeof(vArr) / sizeof(vArr[0]));

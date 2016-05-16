@@ -20,7 +20,7 @@ public:
     }
 
     //合并root2到root1
-    void Combine(int root1, int root2)
+    bool Combine(int root1, int root2)
     {
         //找到两个根节点，将树由根进行合并
         root1 = FindRoot(root1);
@@ -29,7 +29,20 @@ public:
         {
             _arr[root1] += _arr[root2];
             _arr[root2] = root1;
+            return true;
         }
+        return false;
+    }
+
+    bool IsOnlyOneRoot()
+    {
+        int rootNum = 0;
+        for (size_t i = 0; i < _size; ++i)
+        {
+            if (_arr[i] < 0)
+                rootNum++;
+        }
+        return rootNum == 1;
     }
 
     void Display()

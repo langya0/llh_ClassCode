@@ -6,8 +6,8 @@ using namespace std;
 #include"UnionFindset.h"
 int main()
 {
-    //testD();
-    testU();
-    //test();
+    testD();
+   // testU();
+    //testG();
     return 0;
 }
