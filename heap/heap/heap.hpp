@@ -1,4 +1,6 @@
 #pragma once 
+#pragma warning (disable:4018)
+
 #include<iostream>
 #include<vector>
 
@@ -211,14 +213,8 @@ void Test(int *arr,size_t N)
 	cout << *left << endl;
 }
 
-
-
-
-
 #include<iostream>
 using namespace std;
-
-
 
 void Find(int *a, size_t size)
 {
@@ -311,7 +307,7 @@ void GrayCode(int &x,const int Max,const int N)
 void TestGray()
 {
 	int x = 0;
-	int max = 31;
-	int n = 5;
+	int max = 34;
+	int n = 6;
 	GrayCode(x, max, n);
 }
