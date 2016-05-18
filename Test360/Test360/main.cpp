@@ -13,7 +13,7 @@
 ////	assert(index >= 0);
 ////	s[index - 1] = ch;	//Ìæ»»
 ////	int ret = 0;
-////	char* beg = s;
+////	char* beg = s;  
 ////	while (*beg != '\0')
 ////	{
 ////		if (*beg == '.' && (*(beg + 1) != '\0'))
