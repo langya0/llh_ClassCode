@@ -72,7 +72,7 @@ public:
         cur->_next = _eList[ind1];
         _eList[ind1] = cur;
 
-        if (IsDir)
+        if (!IsDir)
         {
             Edge* cur = new Edge(ind1, ind2, e);
             cur->_next = _eList[ind2];
@@ -90,6 +90,7 @@ public:
 			cout << _vArr[i] << " ";
 		}
 		cout << endl << "边表示" << endl;
+
 
 		for (size_t i = 0; i < _size; ++i)
 		{
@@ -192,9 +193,10 @@ public:
             Edge* cur = _eList[i];
             while (cur)
             {
-                ve.push_back(cur);
-                cur = cur->_next;
-            }
+				//只插入有效边
+				ve.push_back(cur);
+				cur = cur->_next;
+			}
         }
 
         UnionFindSet us(_size);
@@ -203,7 +205,6 @@ public:
         {
             //找到最小权值边
             int i = FindMinEdgeIndex(ve);
-
             //并查集插入相关结点
             bool sure = us.Combine(ve[i]->_src, ve[i]->_dst);
             if (sure)   //如果不是连通的，那么加入该边
@@ -254,7 +255,8 @@ public:
             Edge* cur = _eList[i];
             while (cur)
             {
-                ve.push_back(cur);
+				//只插入有效边
+				ve.push_back(cur);
                 cur = cur->_next;
             }
         }
@@ -271,7 +273,6 @@ public:
             else if (i == -1 && !us.IsOnlyOneRoot())
                 return false;
             
-
             //并查集插入相关结点
             bool sure = us.Combine(ve[i]->_src, ve[i]->_dst);
             if (sure)   //如果不是连通的，那么加入该边
@@ -283,6 +284,76 @@ public:
 
         return us.IsOnlyOneRoot();
     }
+	//size_t wights[6] = {};
+	//int paths[6] = {};
+	bool Dijkstra(const V&src,const V&dst,int &ret)
+	{
+		//如果只有顶点，那么返回true，ret =0；
+		if (_size <= 1)
+		{
+			ret = 0;
+			return true;
+		}
+		int cur = FindIndexV(src);
+		int end = FindIndexV(dst);
+		
+		int beg = cur;
+
+		size_t wights[6] = {};
+		int paths[6] = {};
+		for (size_t i = 0; i < _size; ++i)
+		{
+			wights[i] = -1;
+			paths[i] = src;
+		}
+		wights[cur] = 0;
+		paths[cur] = 0;
+
+		Edge* pcur = _eList[cur];
+		//首次更新
+		while (pcur)
+		{
+			wights[pcur->_dst] = pcur->_wight;
+			pcur = pcur->_next;
+		}
+		pcur = _eList[cur];
+
+		int visitedCount = 0;
+		while (cur!=end)//未走到目的
+		{
+			if (cur == beg)
+				visitedCount++;
+			//如果起点没有路径且目标不可达//或者回到起点了
+			if (pcur == NULL&&wights[dst] == -1||cur == beg&&visitedCount==2)
+			{
+				return false;
+			}
+
+			//获取最短边
+			Edge* minCur = _eList[cur];
+			Edge* pcur = _eList[cur];
+			while (pcur)	
+			{
+				if (minCur->_wight > pcur->_wight)
+					minCur = pcur;
+				pcur = pcur->_next;
+			}
+			cur = minCur->_src;
+			//根据局部最短更新路径
+			if (wights[cur] + minCur->_wight < wights[minCur->_dst])
+			{
+				wights[minCur->_dst] = wights[cur] + minCur->_wight;
+				paths[minCur->_dst] = minCur->_src;
+			}
+
+			cur = minCur->_dst;
+			if (minCur->_dst == FindIndexV(dst))
+			{
+				ret = wights[minCur->_dst];
+				return true;
+			}
+		}
+	}
 
     ~GraphList()
 	{
@@ -307,40 +378,78 @@ public:
 	}
 };
 
+
+
 void testD()
 {
-    int vArr1[] = { 1,2,3,4,5,6,7,8,9 };
-    GraphList<int, int> gh1(vArr1, sizeof(vArr1) / sizeof(vArr1[0]));
+	//int vArr1[] = { 1,2,3,4,5,6,7,8,9 };
+	//GraphList<int, int> gh1(vArr1, sizeof(vArr1) / sizeof(vArr1[0]));
 
-    gh1.AddEdge2(1, 2, 11);
-    gh1.AddEdge2(2, 3, 33);
-    gh1.AddEdge2(5, 3, 33);
-    gh1.AddEdge2(1, 3, 33);
-    gh1.AddEdge2(1, 5, 33);
-    gh1.AddEdge2(3, 4, 44);
-    gh1.AddEdge2(4, 5, 55);
-    gh1.AddEdge2(2, 6, 99);
-    gh1.AddEdge2(4, 7, 88);
-    gh1.AddEdge2(7, 8, 65);
-    gh1.AddEdge2(7, 9, 22);
+	//gh1.AddEdge2(1, 2, 11);
+	//gh1.AddEdge2(1, 3, 33);
+	//gh1.AddEdge2(1, 5, 33);
+	//gh1.AddEdge2(2, 3, 33);
+	//gh1.AddEdge2(2, 6, 99);
+	//gh1.AddEdge2(5, 3, 33);
+	//gh1.AddEdge2(3, 4, 44);
+	//gh1.AddEdge2(4, 5, 55);
+	//gh1.AddEdge2(4, 7, 32);
+	//gh1.AddEdge2(7, 8, 65);
+	//gh1.AddEdge2(1, 9, 12);
+	//gh1.AddEdge2(9, 7, 22);	
 
-    gh1.Display();
+	int vArr1[] = { 0,1,2,3,4,5};
+	GraphList<int, int> gh1(vArr1, sizeof(vArr1) / sizeof(vArr1[0]));
 
-    gh1.BSP(1);
-    gh1.DSP(1);
-    GraphList<int, int> gMin(vArr1, sizeof(vArr1) / sizeof(vArr1[0]));
-    GraphList<int, int> gMin1(vArr1, sizeof(vArr1) / sizeof(vArr1[0]));
-    if (gh1.Kruskal(gMin))
-    {
-        cout << "最小生成树：" << endl;
-        gMin.Display();
-    }    
-    if (gh1.Prim(gMin1))
-    {
-        cout << "最小生成树：" << endl;
-        gMin1.Display();
-    }
+	gh1.AddEdge2(0, 3, 10);
+	gh1.AddEdge2(0, 2, 50);
+	gh1.AddEdge2(3, 1, 20);
+	gh1.AddEdge2(1, 2, 10);
+	gh1.AddEdge2(2, 4, 40);
+	gh1.AddEdge2(4, 0, 20);
+	gh1.AddEdge2(4, 1, 30);
+	gh1.AddEdge2(5, 1, 10);
 
+
+
+	gh1.Display();
+
+	gh1.BSP(1);
+	gh1.DSP(1);
+	GraphList<int, int> gMin(vArr1, sizeof(vArr1) / sizeof(vArr1[0]));
+	GraphList<int, int> gMin1(vArr1, sizeof(vArr1) / sizeof(vArr1[0]));
+	if (gh1.Kruskal(gMin))
+	{
+		cout << "kruskal最小生成树：" << endl;
+		gMin.Display();
+	}
+	if (gh1.Prim(gMin1))
+	{
+		cout << "prim最小生成树：" << endl;
+		gMin1.Display();
+	}
+
+	int ret = 0;
+	if (gh1.Dijkstra(0, 1, ret))
+	{
+		cout <<"gh1.Dijkstra(0, 1, ret)"<< ret << endl;
+	}
+	if (gh1.Dijkstra(0, 2, ret))
+	{
+		cout << "gh1.Dijkstra(0, 2, ret)" << ret << endl;
+	}
+	if (gh1.Dijkstra(0, 3, ret))
+	{
+		cout << "gh1.Dijkstra(0, 3, ret)" << ret << endl;
+	}
+	if (gh1.Dijkstra(0, 4, ret))
+	{
+		cout << "gh1.Dijkstra(0, 4, ret)" << ret << endl;
+	}
+	if (gh1.Dijkstra(0, 5, ret))
+	{
+		cout << "gh1.Dijkstra(0, 5, ret)" << ret << endl;
+	}
 	//char vArr2[] = { 'A','B','C','D','E','F' };
 	//GraphList<char, int> gh(vArr2, sizeof(vArr2) / sizeof(vArr2[0]));
 	//gh.AddEdge2('A', 'B', 11);
@@ -351,6 +460,4 @@ void testD()
 	//gh.Display();
 
  //   gh.BSP('A');
-
-
 }
